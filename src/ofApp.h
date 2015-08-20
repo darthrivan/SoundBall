@@ -27,14 +27,15 @@ public:
     //*********************************
     void audioIn(float * input, int bufferSize, int nChannels);
     
-    vector <float> left;
-    vector <float> right;
+    vector <float>  left;
+    vector <float>  right;
     vector <float> volHistory;
     
     float smoothedVol = 1.0;
     float scaledVol;
     
     ofSoundStream soundStream;
+    
     //*********************************
     //END OF AUDIO
     //*********************************

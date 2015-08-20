@@ -13,20 +13,30 @@
 #include "ofMain.h"
 
 class Particle : public ofBaseApp{
-public:
     
+private:
     float theta, u;
     float vTheta, vU;
-    float x,y,z,radius;
+    float x,y,z;
+    float partSizeModi; //Modifier for particles size (particle radius)
+    bool isUpdated;
+    vector<Particle*> near;
     
-    struct Posi{
-        float x, y, z;
-    };
+public:
     
     Particle();
-    Particle(float _theta, float _u);
-    Posi getPosition();
-    void update();
+    Particle(float _theta, float _u, float radius);
+    float getPositionX();
+    float getPositionY();
+    float getPositionZ();
+    void copyParticle(Particle p);
+    void copyParticleConnections(Particle p);
+    void addNearParticle(Particle* pa);
+    int getNumberNearParticles();
+    bool getIsUpdated();
+    void setPartSizeModi(float p);
+    void updateRadius(float radius, float modifier); //This updates the WHOLE system radius
+    void update(float radius);
     void draw();
 };
 

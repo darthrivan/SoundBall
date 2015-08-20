@@ -12,25 +12,30 @@
 #include <iostream>
 //#include <GLUT/glut.h>
 
-//#include "ofMain.h"
 #include "Particle.h"
-//#include "ofGLRenderer.h"
 
 #define NUM_PARTICLES 3000
-#define MAX_CONNECTIONS 50
-#define DISTANCE_CONNECTIONS 10
+#define MAX_CONNECTIONS 10
+#define DISTANCE_CONNECTIONS 20
+#define RADIUS 200
 
 class ParticleSystem : public ofBaseApp {
 public:
     
-    Particle particles[NUM_PARTICLES];
-    
     ParticleSystem();
     void update();
     void draw();
+    void init();
+    void modRad(float modifier);
+    void modPartRad(float highDetect);
     
 private:
-    void connectWithClosest(Particle::Posi origin);
+    Particle particles[NUM_PARTICLES]; //Original particles
+    float connectionsModifier = 1.0; //Variable that changes the connections distance to adjust
+                                     //with the radius movement using sound
+    int nDrawnParticles;
+    
+    void connectWithClosest(int ori_id, float orix, float oriy, float oriz);
 };
 
 #endif /* defined(__SoundBall__ParticleSystem__) */

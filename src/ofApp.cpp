@@ -17,17 +17,17 @@ void ofApp::setup(){
 	soundStream.setDeviceID(0); //bear in mind the device id corresponds to all audio
     //devices, including  input-only and output-only devices.
 	
-	int bufferSize = 512;
-	
-	
-	left.assign(bufferSize, 0.0);
-	right.assign(bufferSize, 0.0);
+    int BUFFER_SIZE = 512;
+
+    left.assign(BUFFER_SIZE, 0.0);
+	right.assign(BUFFER_SIZE, 0.0);
 	volHistory.assign(400, 0.0);
 	
 	smoothedVol     = 0.0;
 	scaledVol		= 0.0;
     
-	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+	soundStream.setup(this, 0, 2, 44100, BUFFER_SIZE, 4);
+    
     //*********************************
     //END OF AUDIO
     //*********************************
@@ -46,6 +46,7 @@ void ofApp::setup(){
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_DEPTH_TEST);
     
+    sys.init();
     //*********************************
     //END OF SOUND BALL
     //*********************************
@@ -53,11 +54,16 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
     //*********************************
     //AUDIO
     //*********************************
-    //lets scale the vol up to a 1.0-2.0 range
-	scaledVol = ofMap(smoothedVol, 0.0, 0.17, 1.0, 2.5, true);
+    
+    // update the sound playing system:
+	//ofSoundUpdate();
+
+    //lets scale the vol up to a 1.0-4.5 range
+	scaledVol = ofMap(smoothedVol, 0.0, 0.17, 1.0, 4.5, true);
     
 	//lets record the volume into an array
 	volHistory.push_back( scaledVol );
@@ -66,6 +72,7 @@ void ofApp::update(){
 	if( volHistory.size() >= 400 ){
 		volHistory.erase(volHistory.begin(), volHistory.begin()+1);
 	}
+    
     //*********************************
     //END OF AUDIO
     //*********************************
@@ -74,8 +81,9 @@ void ofApp::update(){
     //SOUND BALL
     //*********************************
     
-    sys.update();
-    
+    sys.modRad(scaledVol); //Modify particle system's radius
+    //sys.modPartRad(1); //Modify some particles size depending on the HIGHs
+        
     //*********************************
     //END OF SOUND BALL
     //*********************************
@@ -83,7 +91,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    ofBackgroundGradient(ofColor(0), ofColor(0, 180, 200));
     //*********************************
     //SOUND BALL
     //*********************************
@@ -124,7 +132,8 @@ void ofApp::audioIn(float * input, int bufferSize, int nChannels){
 	
 	smoothedVol *= 0.93;
 	smoothedVol += 0.07 * curVol;
-	//*********************************
+    
+    //*********************************
     //END OF AUDIO
     //*********************************
 }

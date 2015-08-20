@@ -15,30 +15,80 @@
 
 
 Particle::Particle() {
-    radius = 150;
     theta = 0;
     u = 0;
     vTheta = 0;
     vU = 0;
+    x = y = z = 0.0;
+    near = vector<Particle*>();
+    partSizeModi = 0.0;
+    isUpdated = false;
 }
 
-Particle::Particle(float _theta, float _u) {
-    radius = 150;
+Particle::Particle(float _theta, float _u, float radius) {
     theta = _theta;
     u = _u;
     vTheta = 0;
     vU = 0;
+    x = y = z = 0.0;
+    partSizeModi = 1.;
+    isUpdated = false;
+    //update(radius);
 }
 
-Particle::Posi Particle::getPosition() {
-    Posi ret;
-    ret.x = x;
-    ret.y = y;
-    ret.z = z;
-    return ret;
+float Particle::getPositionX() {
+    return this->x;
 }
 
-void Particle::update() {
+float Particle::getPositionY() {
+    return this->y;
+}
+
+float Particle::getPositionZ() {
+    return this->z;
+}
+
+void Particle::copyParticle(Particle p){
+    this->theta = p.theta;
+    this->u = p.u;
+    this->vTheta = p.vTheta;
+    this->vU = p.vU;
+    this->x = p.x;
+    this->y = p.y;
+    this->z = p.z;
+    this->partSizeModi = p.partSizeModi;
+    this->near = p.near;
+}
+
+void Particle::copyParticleConnections(Particle p){
+    this->near = p.near;
+}
+
+void Particle::addNearParticle(Particle* pa){
+    near.push_back(pa);
+}
+
+int Particle::getNumberNearParticles(){
+    return near.size();
+}
+
+bool Particle::getIsUpdated(){
+    return isUpdated;
+}
+
+void Particle::setPartSizeModi(float p){
+    partSizeModi = p;
+}
+
+void Particle::updateRadius(float radius, float modifier){
+    if (!isUpdated) isUpdated = true;
+    x = radius*cos(theta)*sqrt(1-(u*u))*modifier;
+    y = radius*sin(theta)*sqrt(1-(u*u))*modifier;
+    z = radius*u*modifier;
+}
+
+void Particle::update(float radius) {
+    if (!isUpdated) isUpdated = true;
     vTheta += ofRandom(-0.001,0.001);
     theta += vTheta;
     
@@ -61,8 +111,14 @@ void Particle::update() {
 
 void Particle::draw() {
     ofPushMatrix();
-    ofTranslate(x,y,z);
-    //glutSolidSphere(3, 6, 6);
-    ofCircle(x, y, z, 1);
+        ofCircle(x, y, z, 0.7*partSizeModi);
     ofPopMatrix();
+    //Now we draw the connections
+    for (int i = 0; i < near.size(); ++i) {
+        ofSetColor(255, 255, 255);
+        ofSetLineWidth(1);
+        //ofLine(origin, end);
+        ofLine(this->x, this->y, this->z,
+               (*near[i]).getPositionX(), (*near[i]).getPositionY(), (*near[i]).getPositionZ());
+    }
 }
